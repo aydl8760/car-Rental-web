@@ -23,7 +23,7 @@ export default function Header() {
             </li>
           </Link>
 
-          <Link href="/auth/sign-In">
+          <Link href="/auth/sign-up">
             <li className="hidden md:inline text-[#edf0f5] hover:underline hover:text-[#FACC15]">
               Signin
             </li>

@@ -5,8 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/AuthContext";
+import axios from "axios";
 import Link from "next/link";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 const initialState = {
   email: "",
@@ -15,13 +18,38 @@ const initialState = {
 
 export default function SignIn() {
   const [formData, setFormData] = useState(initialState);
+  const { setUser } = useAuth();
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
-  const handleSubmit = () => {};
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(
+        "http://localhost:8081/api/auth/signin",
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
+      if (res) {
+        console.log(res);
+
+        toast.success(res?.data?.message);
+        setUser(res?.data?.user);
+        //todo
+      }
+    } catch (error) {
+      console.log(error);
+
+      console.error("Signup error:", error?.response?.data || error.message);
+      toast.error(error?.response?.data?.message);
+    }
+  };
   return (
     <div className="max-w-[550px] bg-[#ffffff] mx-auto mt-20 mb-10 p-5 border border-[#E2E8F0] rounded-lg">
       <h1 className="text-center text-2xl font-semibold text-gray-950 mb-5 ">

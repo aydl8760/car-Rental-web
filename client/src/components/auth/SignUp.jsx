@@ -11,8 +11,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 const initialState = {
   userName: "",
@@ -23,13 +26,34 @@ const initialState = {
 
 export default function SignUp() {
   const [formData, setFormData] = useState(initialState);
+  const router = useRouter();
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
-  const handleSubmit = () => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(
+        "http://localhost:8081/api/auth/signup",
+        formData
+      );
+
+      if (res) {
+        console.log(res);
+        toast.success(res.data.message || "Signup successful! Redirecting...", {
+          position: "top-right",
+        });
+        router.push("/auth/sign-In");
+      }
+    } catch (error) {
+      console.log(error);
+
+      console.error("Signup error:", error?.response?.data || error.message);
+    }
+  };
   return (
     <div className="max-w-[550px] bg-[#ffffff] mx-auto mt-20 mb-10 p-5 border border-[#E2E8F0] rounded-lg">
       <h1 className="text-center text-2xl font-semibold text-gray-950 mb-5 ">

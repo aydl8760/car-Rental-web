@@ -1,5 +1,5 @@
 const express = require("express");
-const { signUp, signIn } = require("../controllers/authController");
+const { signUp, signIn, signOut } = require("../controllers/authController");
 const User = require("../models/User");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post("/signup", signUp);
 router.post("/signin", signIn);
+router.post("/signout", signOut);
 router.get("/me", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select("-password");

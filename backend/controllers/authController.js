@@ -111,7 +111,20 @@ const signIn = async (req, res) => {
   }
 };
 
+const signOut = async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+  res.json({
+    success: true,
+    message: "Logout successfully",
+  });
+};
+
 module.exports = {
   signUp,
   signIn,
+  signOut,
 };

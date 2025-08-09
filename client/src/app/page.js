@@ -1,5 +1,9 @@
-import Image from "next/image";
+import Hero from "@/components/common/Hero";
 
 export default function Home() {
-  return <div className="text-4xl">hello</div>;
+  return (
+    <div className="max-w-7xl mx-auto">
+      <Hero />
+    </div>
+  );
 }

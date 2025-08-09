@@ -31,10 +31,26 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
+  const signOut = async () => {
+    try {
+      await axios.post(
+        "http://localhost:8081/api/auth/signout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      setUser(null);
+      router.push("/auth/sign-In");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   console.log(user);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={{ user, setUser, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   );

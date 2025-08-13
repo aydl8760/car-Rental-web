@@ -1,5 +1,5 @@
 const { imageUploadUtil } = require("../config/cloudinary");
-const list = require("../models/list");
+const List = require("../models/list");
 const User = require("../models/User");
 
 const handleMultipleImageUpload = async (req, res) => {
@@ -85,7 +85,26 @@ const createList = async (req, res) => {
   }
 };
 
+const getListsByUserAdminId = async (req, res, next) => {
+  if (req.userId !== req.params.uid) {
+    return res.status(403).json({
+      success: false,
+      message: "You can only view your own listing",
+    });
+  }
+  try {
+    const userlists = await List.find({ owner: req.params.uid }).populate(
+      "owner",
+      "userName email"
+    );
+    res.status(200).json(userlists);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createList,
   handleMultipleImageUpload,
+  getListsByUserAdminId,
 };

@@ -8,6 +8,7 @@ import { ChevronLeft, LogOut, UserPen } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import toast from "react-hot-toast";
+import ProfileModal from "./Modal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +21,7 @@ import UserAdminHeader from "../UserAdmin/UserAdminHeader";
 
 export default function Header() {
   const { user, signOut } = useAuth();
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const pathname = usePathname();
 
   console.log(user);
@@ -84,7 +85,10 @@ export default function Header() {
                             <span>{user?.email}</span>
                           </DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="cursor-pointer">
+                          <DropdownMenuItem
+                            onClick={() => setIsModalOpen(true)}
+                            className="cursor-pointer"
+                          >
                             <UserPen className="mr-2 w-4 h-4" />
                             Account
                           </DropdownMenuItem>
@@ -97,6 +101,11 @@ export default function Header() {
                           </Link>
                         </DropdownMenuContent>
                       </DropdownMenu>
+                      <ProfileModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        user={user}
+                      />
                     </>
                   </>
                 ) : user && user?.role === "admin" ? (

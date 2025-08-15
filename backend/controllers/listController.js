@@ -103,8 +103,96 @@ const getListsByUserAdminId = async (req, res, next) => {
   }
 };
 
+const getSerachList = async (req, res, next) => {
+  try {
+    const {
+      brand = [],
+      model = [],
+      fuelType = [],
+      year = [],
+      condition = [],
+      sortBy = "price-lowtohigh",
+      searchTerm = "",
+      limit = 12,
+      startIndex = 0,
+    } = req.query;
+
+    let filters = {};
+
+    if (brand.length) {
+      filters.brand = { $in: brand.split(",") };
+    }
+
+    if (model.length) {
+      filters.model = { $in: model.split(",") };
+    }
+
+    if (fuelType?.length) {
+      filters.fuelType = { $in: fuelType.split(",") };
+    }
+
+    if (condition.length) {
+      filters.condition = { $in: condition.split(",") };
+    }
+
+    if (year.length) {
+      const yearRange = year.split(",").map(Number);
+      filters.year = { $in: yearRange };
+    }
+
+    if (searchTerm) {
+      const yearSearch = parseInt(searchTerm);
+      const yearFilter = !isNaN(yearSearch) ? { year: yearSearch } : null;
+      filters.$or = [
+        { make: { $regex: searchTerm, $options: "i" } },
+        { location: { $regex: searchTerm, $options: "i" } },
+        { model: { $regex: searchTerm, $options: "i" } },
+
+        { condition: { $regex: searchTerm, $options: "i" } },
+        { fuelType: { $regex: searchTerm, $options: "i" } },
+        ...(yearFilter ? [yearFilter] : []),
+      ];
+    }
+
+    let sort = {};
+
+    switch (sortBy) {
+      case "price-lowtohigh":
+        sort.price = 1;
+        break;
+      case "price-hightolow":
+        sort.price = -1;
+        break;
+
+      case "title-az":
+        sort.model = 1;
+        break;
+
+      case "title-za":
+        sort.model = -1;
+        break;
+
+      default:
+        sort.price = 1;
+        break;
+    }
+    const lists = await List.find(filters)
+      .sort(sort)
+      .limit(limit)
+      .skip(startIndex);
+    res.status(200).json({
+      success: true,
+      lists,
+    });
+  } catch (error) {
+    next(error);
+    console.log(error);
+  }
+};
+
 module.exports = {
   createList,
   handleMultipleImageUpload,
   getListsByUserAdminId,
+  getSerachList,
 };

@@ -5,6 +5,7 @@ const {
   handleMultipleImageUpload,
 
   getListsByUserAdminId,
+  getSerachList,
 } = require("../controllers/listController");
 const { upload } = require("../config/cloudinary");
 
@@ -16,6 +17,7 @@ router.post(
   handleMultipleImageUpload
 );
 router.post("/create", authMiddleware, createList);
+router.get("/get", getSerachList);
 router.get("/:uid", authMiddleware, getListsByUserAdminId);
 
 module.exports = router;
